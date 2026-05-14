@@ -28,14 +28,16 @@ export function useUserData(userId) {
       return
     }
     setSyncing(true)
+    console.log('[Supabase] Laster data for bruker:', userId)
     supabase
       .from('user_data')
       .select('departments, active_dept_id')
       .eq('user_id', userId)
       .maybeSingle()
       .then(({ data, error }) => {
-        if (error) console.error('Supabase last feil:', error)
+        if (error) console.error('[Supabase] Last feil:', error)
         if (!error && data) {
+          console.log('[Supabase] Data lastet:', data.departments?.length, 'avdelinger')
           const depts = data.departments ?? []
           const active = data.active_dept_id ?? null
           setDepartmentsState(depts)
@@ -53,10 +55,14 @@ export function useUserData(userId) {
     if (!supabase || !userId || userId === '__none__') return
     if (!saveEnabled.current) return
     const timer = setTimeout(() => {
+      console.log('[Supabase] Lagrer', departments.length, 'avdelinger for bruker:', userId)
       supabase
         .from('user_data')
         .upsert({ user_id: userId, departments, active_dept_id: activeDeptId, updated_at: new Date().toISOString() })
-        .then(({ error }) => { if (error) console.error('Supabase lagre feil:', error) })
+        .then(({ error }) => {
+          if (error) console.error('[Supabase] Lagre feil:', error)
+          else console.log('[Supabase] Lagret OK')
+        })
     }, 500)
     return () => clearTimeout(timer)
   }, [departments, activeDeptId, userId])

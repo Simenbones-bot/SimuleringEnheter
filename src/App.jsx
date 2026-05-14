@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from './hooks/useAuth'
 import { useUserData } from './hooks/useSupabaseStorage'
+import { supabase } from './lib/supabase'
 import Sidebar from './components/Sidebar'
 import DepartmentView from './components/DepartmentView'
 import LoginScreen from './components/LoginScreen'
@@ -79,10 +80,16 @@ export default function App() {
         />
       )}
 
-      {dbStatus === 'error' && (
+      {!supabase && (
+        <div className="fixed bottom-4 right-4 bg-orange-600 text-white text-sm rounded-lg px-4 py-3 shadow-lg max-w-sm z-50">
+          <strong className="block mb-1">Supabase ikke konfigurert</strong>
+          VITE_SUPABASE_URL eller VITE_SUPABASE_ANON_KEY mangler i bygget. Sjekk GitHub Secrets og kjør GitHub Actions på nytt.
+        </div>
+      )}
+      {supabase && dbStatus === 'error' && (
         <div className="fixed bottom-4 right-4 bg-red-600 text-white text-sm rounded-lg px-4 py-3 shadow-lg max-w-sm z-50">
-          <strong className="block mb-1">Supabase ikke klar</strong>
-          Databasetabellene mangler. Kjør SQL-oppsettet i Supabase SQL Editor — data lagres midlertidig i nettleseren inntil dette er gjort.
+          <strong className="block mb-1">Databasetabeller mangler</strong>
+          Kjør SQL-oppsettet for app_users i Supabase SQL Editor.
         </div>
       )}
     </div>
