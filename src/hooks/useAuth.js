@@ -28,12 +28,14 @@ export function useAuth() {
   const [currentUser, setCurrentUser] = useState(loadSession)
   const [allUsers, setAllUsers] = useState([])
   const [ready, setReady] = useState(false)
+  const [dbStatus, setDbStatus] = useState('unknown') // 'ok' | 'error' | 'unknown'
 
   useEffect(() => {
     async function seed() {
       if (supabase) {
         const { data: users, error } = await supabase.from('app_users').select('id, username, role')
         if (!error) {
+          setDbStatus('ok')
           setAllUsers(users ?? [])
           if ((users ?? []).length === 0) {
             const hash = await hashPassword('admin', 'Admin123')
@@ -43,6 +45,8 @@ export function useAuth() {
           setReady(true)
           return
         }
+        console.error('Supabase app_users feil (tabellen finnes trolig ikke):', error.message)
+        setDbStatus('error')
       }
       // Fallback: localStorage
       const users = loadLocalUsers()
@@ -138,5 +142,5 @@ export function useAuth() {
     localStorage.removeItem(`varebil-active-dept-${userId}`)
   }
 
-  return { currentUser, allUsers, ready, login, logout, createUser, deleteUser }
+  return { currentUser, allUsers, ready, dbStatus, login, logout, createUser, deleteUser }
 }
