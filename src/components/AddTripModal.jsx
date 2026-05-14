@@ -1,15 +1,15 @@
 import { useState } from 'react'
 import { DAYS, TRIP_TYPES, generateId } from '../utils/timeUtils'
 
-const DEFAULT_DAYS = []
-
 export default function AddTripModal({ vehicle, onClose, onAdd }) {
-  const [type, setType] = useState('leveranse')
+  const [type, setType] = useState('fast_rute')
+  const [customerName, setCustomerName] = useState('')
   const [km, setKm] = useState('')
-  const [price, setPrice] = useState('')
+  const [revenuePerHour, setRevenuePerHour] = useState('')
   const [start, setStart] = useState('08:00')
   const [end, setEnd] = useState('09:00')
-  const [selectedDays, setSelectedDays] = useState(DEFAULT_DAYS)
+  const [selectedDays, setSelectedDays] = useState([])
+  const [staffing, setStaffing] = useState('enkelt')
   const [error, setError] = useState('')
 
   function toggleDay(key) {
@@ -31,19 +31,23 @@ export default function AddTripModal({ vehicle, onClose, onAdd }) {
     onAdd({
       id: generateId(),
       type,
+      customerName: customerName.trim() || null,
       km: km ? parseFloat(km) : null,
-      price: price ? parseFloat(price) : null,
+      revenuePerHour: revenuePerHour ? parseFloat(revenuePerHour) : null,
       start,
       end,
       days: selectedDays,
+      staffing,
     })
     onClose()
   }
 
+  const inputCls = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg">
-        <div className="flex items-center justify-between p-5 border-b">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-5 border-b sticky top-0 bg-white">
           <div>
             <h2 className="text-lg font-semibold text-gray-800">Legg til kjøring</h2>
             <p className="text-sm text-gray-500">{vehicle.reg} – {vehicle.model}</p>
@@ -59,16 +63,39 @@ export default function AddTripModal({ vehicle, onClose, onAdd }) {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Type kjøring</label>
-            <select
-              value={type}
-              onChange={e => setType(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {TRIP_TYPES.map(t => (
-                <option key={t.value} value={t.value}>{t.label}</option>
-              ))}
-            </select>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Kundenavn</label>
+            <input
+              value={customerName}
+              onChange={e => setCustomerName(e.target.value)}
+              placeholder="Navn på kunde (valgfri)"
+              className={inputCls}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Type kjøring</label>
+              <select
+                value={type}
+                onChange={e => setType(e.target.value)}
+                className={inputCls}
+              >
+                {TRIP_TYPES.map(t => (
+                  <option key={t.value} value={t.value}>{t.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Bemanning</label>
+              <select
+                value={staffing}
+                onChange={e => setStaffing(e.target.value)}
+                className={inputCls}
+              >
+                <option value="enkelt">Enkeltbemannet</option>
+                <option value="dobbel">Dobbelt bemannet</option>
+              </select>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -81,19 +108,19 @@ export default function AddTripModal({ vehicle, onClose, onAdd }) {
                 value={km}
                 onChange={e => setKm(e.target.value)}
                 placeholder="0"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={inputCls}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Pris (kr)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Inntekter pr. time (kr/t)</label>
               <input
                 type="number"
                 min="0"
                 step="1"
-                value={price}
-                onChange={e => setPrice(e.target.value)}
+                value={revenuePerHour}
+                onChange={e => setRevenuePerHour(e.target.value)}
                 placeholder="0"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={inputCls}
               />
             </div>
           </div>
@@ -105,7 +132,7 @@ export default function AddTripModal({ vehicle, onClose, onAdd }) {
                 type="time"
                 value={start}
                 onChange={e => setStart(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={inputCls}
               />
             </div>
             <div>
@@ -114,7 +141,7 @@ export default function AddTripModal({ vehicle, onClose, onAdd }) {
                 type="time"
                 value={end}
                 onChange={e => setEnd(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={inputCls}
               />
             </div>
           </div>

@@ -6,15 +6,17 @@ const HOURS = Array.from({ length: 25 }, (_, i) => i)
 
 function Tooltip({ trip, style }) {
   const typeLabel = TRIP_TYPES.find(t => t.value === trip.type)?.label || trip.type
+  const staffingLabel = trip.staffing === 'dobbel' ? 'Dobbelt bemannet' : 'Enkeltbemannet'
   return (
     <div
       className="absolute z-30 bg-gray-900 text-white text-xs rounded-lg p-2.5 shadow-xl pointer-events-none whitespace-nowrap"
       style={style}
     >
-      <div className="font-semibold mb-1">{typeLabel}</div>
+      {trip.customerName && <div className="font-semibold mb-1">{trip.customerName}</div>}
+      <div className="text-gray-300">{typeLabel} · {staffingLabel}</div>
       <div className="text-gray-300">{trip.start} – {trip.end}</div>
       {trip.km != null && <div className="text-gray-300">{trip.km} km</div>}
-      {trip.price != null && <div className="text-gray-300">{trip.price} kr</div>}
+      {trip.revenuePerHour != null && <div className="text-gray-300">{trip.revenuePerHour} kr/t</div>}
     </div>
   )
 }
@@ -48,7 +50,7 @@ function TripBlock({ trip, dayKey }) {
       onMouseMove={handleMouseMove}
     >
       <span className="px-1 text-white text-xs font-medium truncate block leading-5 select-none">
-        {trip.start}
+        {trip.customerName || trip.start}
       </span>
       {hovering && (
         <Tooltip trip={trip} style={{ left: pos.x, top: pos.y }} />
