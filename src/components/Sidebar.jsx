@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { generateId } from '../utils/timeUtils'
 
-export default function Sidebar({ departments, activeDeptId, currentUser, onSelect, onAdd, onDelete, onLogout, onOpenUserMgmt }) {
+export default function Sidebar({ departments, activeDeptId, currentUser, syncing, onSelect, onAdd, onDelete, onLogout, onOpenUserMgmt }) {
   const [newName, setNewName] = useState('')
   const [adding, setAdding] = useState(false)
 
@@ -16,7 +16,10 @@ export default function Sidebar({ departments, activeDeptId, currentUser, onSele
   return (
     <aside className="w-64 min-h-screen bg-gray-900 text-white flex flex-col shrink-0">
       <div className="p-4 border-b border-gray-700">
-        <h1 className="text-lg font-bold text-white">Varebil-simulator</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-bold text-white">Varebil-simulator</h1>
+          {syncing && <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse shrink-0" title="Synkroniserer..." />}
+        </div>
         <p className="text-xs text-gray-400 mt-0.5">Avdelingsplanlegger</p>
       </div>
 

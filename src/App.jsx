@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { useLocalStorage } from './hooks/useLocalStorage'
 import { useAuth } from './hooks/useAuth'
+import { useUserData } from './hooks/useSupabaseStorage'
 import Sidebar from './components/Sidebar'
 import DepartmentView from './components/DepartmentView'
 import LoginScreen from './components/LoginScreen'
@@ -11,8 +11,7 @@ export default function App() {
   const [showUserMgmt, setShowUserMgmt] = useState(false)
 
   const userId = currentUser?.userId || '__none__'
-  const [departments, setDepartments] = useLocalStorage(`varebil-departments-${userId}`, [])
-  const [activeDeptId, setActiveDeptId] = useLocalStorage(`varebil-active-dept-${userId}`, null)
+  const { departments, setDepartments, activeDeptId, setActiveDeptId, syncing } = useUserData(userId)
 
   const activeDept = departments.find(d => d.id === activeDeptId) || null
 
@@ -45,6 +44,7 @@ export default function App() {
         departments={departments}
         activeDeptId={activeDeptId}
         currentUser={currentUser}
+        syncing={syncing}
         onSelect={setActiveDeptId}
         onAdd={addDepartment}
         onDelete={deleteDepartment}
