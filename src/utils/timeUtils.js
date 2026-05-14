@@ -9,8 +9,6 @@ export const DAYS = [
 ]
 
 export const TRIP_TYPES = [
-  { value: 'leveranse', label: 'Leveranse', color: 'bg-blue-500' },
-  { value: 'henting', label: 'Henting', color: 'bg-green-500' },
   { value: 'fast_rute', label: 'Fast rute', color: 'bg-purple-500' },
   { value: 'annet', label: 'Annet', color: 'bg-orange-500' },
 ]
@@ -22,8 +20,6 @@ export function getTripColor(type) {
 
 export function getTripColorHex(type) {
   const map = {
-    leveranse: '#3b82f6',
-    henting: '#22c55e',
     fast_rute: '#a855f7',
     annet: '#f97316',
   }

@@ -6,15 +6,17 @@ const HOURS = Array.from({ length: 25 }, (_, i) => i)
 
 function Tooltip({ trip, style }) {
   const typeLabel = TRIP_TYPES.find(t => t.value === trip.type)?.label || trip.type
+  const staffingLabel = trip.staffing === 'dobbel' ? 'Dobbelt bemannet' : 'Enkeltbemannet'
   return (
     <div
       className="absolute z-30 bg-gray-900 text-white text-xs rounded-lg p-2.5 shadow-xl pointer-events-none whitespace-nowrap"
       style={style}
     >
-      <div className="font-semibold mb-1">{typeLabel}</div>
+      {trip.customerName && <div className="font-semibold mb-1">{trip.customerName}</div>}
+      <div className="text-gray-300">{typeLabel} · {staffingLabel}</div>
       <div className="text-gray-300">{trip.start} – {trip.end}</div>
       {trip.km != null && <div className="text-gray-300">{trip.km} km</div>}
-      {trip.price != null && <div className="text-gray-300">{trip.price} kr</div>}
+      {trip.revenuePerHour != null && <div className="text-gray-300">{trip.revenuePerHour} kr/t</div>}
     </div>
   )
 }
@@ -48,7 +50,7 @@ function TripBlock({ trip, dayKey }) {
       onMouseMove={handleMouseMove}
     >
       <span className="px-1 text-white text-xs font-medium truncate block leading-5 select-none">
-        {trip.start}
+        {trip.customerName || trip.start}
       </span>
       {hovering && (
         <Tooltip trip={trip} style={{ left: pos.x, top: pos.y }} />
@@ -108,7 +110,6 @@ export default function Timeline({ vehicles, onAddTrip, onDeleteVehicle }) {
   return (
     <div className="flex-1 overflow-x-auto overflow-y-auto">
       <div className="min-w-[900px]">
-        {/* Header: day labels */}
         <div className="flex border-b-2 border-gray-300 sticky top-0 bg-white z-10 shadow-sm">
           <div className="shrink-0 border-r border-gray-200 bg-gray-50" style={{ width: LABEL_COL }} />
           <div className="flex-1 grid" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
@@ -120,7 +121,6 @@ export default function Timeline({ vehicles, onAddTrip, onDeleteVehicle }) {
           </div>
         </div>
 
-        {/* Hour ruler */}
         <div className="flex border-b border-gray-200 bg-gray-50 sticky top-[37px] z-10">
           <div className="shrink-0 border-r border-gray-200" style={{ width: LABEL_COL }} />
           <div className="flex-1 grid" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
@@ -149,7 +149,6 @@ export default function Timeline({ vehicles, onAddTrip, onDeleteVehicle }) {
           </div>
         </div>
 
-        {/* Vehicle rows */}
         {vehicles.length === 0 ? (
           <div className="flex items-center justify-center py-20 text-gray-400 text-sm">
             Ingen biler ennå – legg til en bil for å komme i gang
