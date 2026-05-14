@@ -53,7 +53,7 @@ export function useUserData(userId) {
       supabase
         .from('user_data')
         .upsert({ user_id: userId, departments: depts, active_dept_id: active, updated_at: new Date().toISOString() })
-        .then(() => {})
+        .then(({ error }) => { if (error) console.error('Supabase upsert feil:', error) })
     }, 500)
   }
 
