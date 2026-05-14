@@ -22,6 +22,7 @@ export function useUserData(userId) {
   const latestDepts = useRef(departments)
   const latestActive = useRef(activeDeptId)
 
+  // Load from Supabase on mount
   useEffect(() => {
     if (!supabase || !userId) return
     setSyncing(true)
@@ -52,7 +53,7 @@ export function useUserData(userId) {
       supabase
         .from('user_data')
         .upsert({ user_id: userId, departments: depts, active_dept_id: active, updated_at: new Date().toISOString() })
-        .then(() => {})
+        .then(({ error }) => { if (error) console.error('Supabase upsert feil:', error) })
     }, 500)
   }
 
