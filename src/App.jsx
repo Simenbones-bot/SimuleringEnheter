@@ -7,7 +7,7 @@ import LoginScreen from './components/LoginScreen'
 import UserManagementModal from './components/UserManagementModal'
 
 export default function App() {
-  const { currentUser, allUsers, ready, login, logout, createUser, deleteUser } = useAuth()
+  const { currentUser, allUsers, ready, dbStatus, login, logout, createUser, deleteUser } = useAuth()
   const [showUserMgmt, setShowUserMgmt] = useState(false)
 
   const userId = currentUser?.userId || '__none__'
@@ -77,6 +77,13 @@ export default function App() {
           onCreateUser={createUser}
           onDeleteUser={deleteUser}
         />
+      )}
+
+      {dbStatus === 'error' && (
+        <div className="fixed bottom-4 right-4 bg-red-600 text-white text-sm rounded-lg px-4 py-3 shadow-lg max-w-sm z-50">
+          <strong className="block mb-1">Supabase ikke klar</strong>
+          Databasetabellene mangler. Kjør SQL-oppsettet i Supabase SQL Editor — data lagres midlertidig i nettleseren inntil dette er gjort.
+        </div>
       )}
     </div>
   )
