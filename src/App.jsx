@@ -1,13 +1,26 @@
 import { useState } from 'react'
 import { useLocalStorage } from './hooks/useLocalStorage'
+import { useAuth } from './hooks/useAuth'
 import Sidebar from './components/Sidebar'
 import DepartmentView from './components/DepartmentView'
+import LoginScreen from './components/LoginScreen'
+import UserManagementModal from './components/UserManagementModal'
 
 export default function App() {
-  const [departments, setDepartments] = useLocalStorage('varebil-departments', [])
-  const [activeDeptId, setActiveDeptId] = useLocalStorage('varebil-active-dept', null)
+  const { currentUser, allUsers, ready, login, logout, createUser, deleteUser } = useAuth()
+  const [showUserMgmt, setShowUserMgmt] = useState(false)
+
+  const userId = currentUser?.userId || '__none__'
+  const [departments, setDepartments] = useLocalStorage(`varebil-departments-${userId}`, [])
+  const [activeDeptId, setActiveDeptId] = useLocalStorage(`varebil-active-dept-${userId}`, null)
 
   const activeDept = departments.find(d => d.id === activeDeptId) || null
+
+  if (!ready) return null
+
+  if (!currentUser) {
+    return <LoginScreen onLogin={login} />
+  }
 
   function addDepartment(dept) {
     setDepartments(prev => [...prev, dept])
@@ -17,9 +30,7 @@ export default function App() {
   function deleteDepartment(id) {
     setDepartments(prev => {
       const next = prev.filter(d => d.id !== id)
-      if (activeDeptId === id) {
-        setActiveDeptId(next[0]?.id || null)
-      }
+      if (activeDeptId === id) setActiveDeptId(next[0]?.id || null)
       return next
     })
   }
@@ -33,9 +44,12 @@ export default function App() {
       <Sidebar
         departments={departments}
         activeDeptId={activeDeptId}
+        currentUser={currentUser}
         onSelect={setActiveDeptId}
         onAdd={addDepartment}
         onDelete={deleteDepartment}
+        onLogout={logout}
+        onOpenUserMgmt={() => setShowUserMgmt(true)}
       />
 
       <main className="flex-1 flex flex-col overflow-hidden bg-white">
@@ -54,6 +68,16 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {showUserMgmt && currentUser.role === 'admin' && (
+        <UserManagementModal
+          currentUser={currentUser}
+          allUsers={allUsers}
+          onClose={() => setShowUserMgmt(false)}
+          onCreateUser={createUser}
+          onDeleteUser={deleteUser}
+        />
+      )}
     </div>
   )
 }

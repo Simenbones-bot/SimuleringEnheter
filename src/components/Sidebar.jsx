@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { generateId } from '../utils/timeUtils'
 
-export default function Sidebar({ departments, activeDeptId, onSelect, onAdd, onDelete }) {
+export default function Sidebar({ departments, activeDeptId, currentUser, onSelect, onAdd, onDelete, onLogout, onOpenUserMgmt }) {
   const [newName, setNewName] = useState('')
   const [adding, setAdding] = useState(false)
 
@@ -47,7 +47,7 @@ export default function Sidebar({ departments, activeDeptId, onSelect, onAdd, on
         )}
       </nav>
 
-      <div className="p-3 border-t border-gray-700">
+      <div className="p-3 border-t border-gray-700 space-y-2">
         {adding ? (
           <div className="space-y-2">
             <input
@@ -81,6 +81,29 @@ export default function Sidebar({ departments, activeDeptId, onSelect, onAdd, on
             + Ny avdeling
           </button>
         )}
+
+        {currentUser?.role === 'admin' && (
+          <button
+            onClick={onOpenUserMgmt}
+            className="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-medium py-1.5 rounded-lg transition-colors"
+          >
+            Administrer brukere
+          </button>
+        )}
+
+        <div className="flex items-center justify-between pt-1 border-t border-gray-700">
+          <div className="text-xs text-gray-400 truncate">
+            <span className="text-gray-500">Innlogget som</span><br />
+            <span className="text-gray-200 font-medium">{currentUser?.username}</span>
+          </div>
+          <button
+            onClick={onLogout}
+            className="text-xs text-gray-400 hover:text-white transition-colors ml-2 shrink-0"
+            title="Logg ut"
+          >
+            Logg ut
+          </button>
+        </div>
       </div>
     </aside>
   )
